@@ -27,15 +27,22 @@ def display_tickets(tickets):
 
 def create_new_ticket(tickets):
     title = input("Ticket title: ").strip()
-    description = input("Ticket description: ").strip()
-    priority = input("Priority (low/medium/high/critical) [medium]: ").strip()
+    category = input("Category (Network/Hardware/Software/Other): ").strip()
+    urgency = input("Urgency (low/medium/high): ").strip()
+    affected_users = int(input("Number of affected users: "))
 
-    if not priority:
-        priority = "medium"
+    ticket = create_ticket(
+        tickets,
+        title=title,
+        category=category,
+        urgency=urgency,
+        affected_users=affected_users,
+    )
 
-    ticket = create_ticket(tickets, title, description, priority)
     save_tickets(tickets)
+
     print(f"\nTicket {ticket['id']} created successfully.")
+    print(f"Calculated priority: {ticket['priority']}")
 
 
 def assign_existing_ticket(tickets):

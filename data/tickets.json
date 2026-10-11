@@ -6,5 +6,15 @@
     "priority": "high",
     "status": "open",
     "assigned_to": null
+  },
+  {
+    "id": "T002",
+    "title": "Campus Wi-Fi is down",
+    "category": "Network",
+    "urgency": "high",
+    "affected_users": 15,
+    "priority": "critical",
+    "status": "open",
+    "assigned_to": null
   }
 ]
