@@ -152,3 +152,14 @@ Going forward, I will aim to understand the proposed changes before applying the
 AI was a development assistant, not a substitute for my own understanding or responsibility for the project.
 
 The most useful part of the process was learning to combine code review, automated testing, integration testing, and version control checks to establish whether the implementation worked.
+
+---
+
+## Entry 5 (TO COMPLETE): An AI suggestion I corrected, improved or rejected
+
+> Jedidiah: the entries above describe tasks. The guide also requires one entry where
+> you checked an AI suggestion yourself and changed or rejected it. Fill this in
+> truthfully using the template in `ai-learning-log.md` (your actual prompt, your own
+> experiment, what you observed, your decision). For example, if you reviewed the
+> case-sensitive ticket-ID lookup or the duplicated `assign_ticket` function and
+> changed it, say what you tested and why. Delete this note once done.

@@ -46,6 +46,15 @@ class TestTicketAssignment(unittest.TestCase):
             assign_ticket(tickets, "T001", "Mary")
 
 
+class TestCaseInsensitiveIds(unittest.TestCase):
+    def test_lowercase_id_is_accepted_for_assign_and_status(self):
+        tickets = [make_ticket()]
+        assign_ticket(tickets, "t001", "Ada")
+        update_status(tickets, "t001", "in_progress")
+        self.assertEqual(tickets[0]["status"], "in_progress")
+        self.assertEqual(tickets[0]["assigned_to"], "Ada")
+
+
 class TestTicketWorkflow(unittest.TestCase):
     def test_unassigned_ticket_cannot_start(self):
         with self.assertRaises(ValueError):

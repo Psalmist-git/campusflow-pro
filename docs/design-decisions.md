@@ -148,3 +148,30 @@ allows the core workflow to be exercised without a web server.
 **Trade-off:** The current interface is not a multi-user web application and
 does not provide a graphical dashboard.
 
+
+## Decision: Module Ownership and Shared Contracts
+
+**Decision:** `tickets.py` (creation, validation, priority, ID lookup) belongs to
+Engineer A. `workflow.py` (assignment, status changes, queue) and `reports.py`
+belong to Engineer B. `storage.py` is shared: Engineer A wrote the first version and
+Engineer B integrated and tested it. All modules raise `ValidationError` (a subclass
+of `ValueError`) for bad input and `StorageError` for file problems; the CLI catches
+both and prints the message.
+
+**Rationale:** One clear owner per module makes it easy to review and defend code.
+
+## Decision: Single Assignment Function and Case-Insensitive IDs
+
+**Decision:** `assign_ticket` exists only in `workflow.py`. Ticket IDs are matched
+case-insensitively (`t001` finds `T001`) through `tickets.find_ticket`, which
+`workflow.py` reuses.
+
+**Rationale:** Two copies of `assign_ticket` behaved differently (one rejected
+lowercase IDs, one allowed assigning resolved tickets). One implementation keeps
+the rules consistent.
+
+## Decision: CLI Input Parsing
+
+**Decision:** The "affected users" text typed in the CLI is converted with
+`parse_affected_users`, which raises `ValidationError` with a clear message for
+text, decimals, zero and negatives. A "View one ticket" menu option (F2) was added.

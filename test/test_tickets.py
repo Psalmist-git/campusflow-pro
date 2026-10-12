@@ -3,16 +3,17 @@ import unittest
 
 from campusflow.tickets import (
     ValidationError,
-    assign_ticket,
     compute_priority,
     create_ticket,
     find_ticket,
     next_ticket_id,
     normalize_category,
     normalize_urgency,
+    parse_affected_users,
     validate_affected_users,
     validate_title,
 )
+from campusflow.workflow import assign_ticket
 
 
 class PriorityEngineTests(unittest.TestCase):
@@ -200,6 +201,17 @@ class FindAndAssignTests(unittest.TestCase):
     def test_blank_staff_name_is_rejected(self):
         with self.assertRaises(ValidationError):
             assign_ticket(self.tickets, "T001", "  ")
+
+
+class ParseAffectedUsersTests(unittest.TestCase):
+    def test_valid_text_is_converted(self):
+        self.assertEqual(parse_affected_users(" 15 "), 15)
+
+    def test_text_decimal_zero_and_negative_are_rejected(self):
+        for bad in ("abc", "2.5", "0", "-3", ""):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ValidationError):
+                    parse_affected_users(bad)
 
 
 if __name__ == "__main__":

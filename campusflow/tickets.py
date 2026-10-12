@@ -58,6 +58,22 @@ def validate_affected_users(raw) -> int:
     return raw
 
 
+def parse_affected_users(text) -> int:
+    """Convert typed input (e.g. from the CLI) to a valid affected_users int.
+
+    Rejects text, decimals, zero and negatives with a ValidationError.
+    """
+    if not isinstance(text, str):
+        return validate_affected_users(text)
+    try:
+        value = int(text.strip())
+    except ValueError:
+        raise ValidationError(
+            "Affected users must be a positive whole number (e.g. 15)."
+        ) from None
+    return validate_affected_users(value)
+
+
 def compute_priority(urgency: str, affected_users: int) -> str:
     """Calculate priority; the first matching rule wins."""
     if urgency == "high" and affected_users >= 10:
@@ -186,22 +202,4 @@ def create_ticket(
         }
 
     tickets.append(ticket)
-    return ticket
-
-
-def assign_ticket(
-    tickets: list[dict],
-    ticket_id: str,
-    staff_name: str,
-) -> dict:
-    """Assign a ticket to a non-empty staff name."""
-    ticket = find_ticket(tickets, ticket_id)
-
-    if ticket is None:
-        raise ValidationError(f"No ticket with id {ticket_id!r}.")
-
-    if not isinstance(staff_name, str) or not staff_name.strip():
-        raise ValidationError("Staff name must not be blank.")
-
-    ticket["assigned_to"] = staff_name.strip()
     return ticket
