@@ -2,12 +2,34 @@
 
 from campusflow.reports import print_report
 from campusflow.storage import load_tickets, save_tickets
-from campusflow.tickets import create_ticket
+from campusflow.tickets import (
+    ValidationError,
+    create_ticket,
+    find_ticket,
+    parse_affected_users,
+)
 from campusflow.workflow import (
     assign_ticket,
     get_work_queue,
     update_status,
 )
+
+
+def print_ticket(ticket):
+    """Print every stored field of one ticket."""
+    print(f"\nID:             {ticket.get('id')}")
+    print(f"Title:          {ticket.get('title')}")
+    if ticket.get("description"):
+        print(f"Description:    {ticket['description']}")
+    if ticket.get("category"):
+        print(f"Category:       {ticket['category']}")
+    if ticket.get("urgency"):
+        print(f"Urgency:        {ticket['urgency']}")
+    if ticket.get("affected_users") is not None:
+        print(f"Affected users: {ticket['affected_users']}")
+    print(f"Priority:       {ticket.get('priority')}")
+    print(f"Status:         {ticket.get('status')}")
+    print(f"Assigned to:    {ticket.get('assigned_to') or 'Unassigned'}")
 
 
 def display_tickets(tickets):
@@ -17,19 +39,22 @@ def display_tickets(tickets):
 
     print("\n=== CampusFlow Tickets ===")
     for ticket in tickets:
-        print(f"\nID:          {ticket.get('id')}")
-        print(f"Title:       {ticket.get('title')}")
-        print(f"Description: {ticket.get('description')}")
-        print(f"Priority:    {ticket.get('priority')}")
-        print(f"Status:      {ticket.get('status')}")
-        print(f"Assigned to: {ticket.get('assigned_to') or 'Unassigned'}")
+        print_ticket(ticket)
+
+
+def view_one_ticket(tickets):
+    ticket_id = input("Ticket ID: ").strip()
+    ticket = find_ticket(tickets, ticket_id)
+    if ticket is None:
+        raise ValidationError(f"Ticket {ticket_id!r} was not found.")
+    print_ticket(ticket)
 
 
 def create_new_ticket(tickets):
     title = input("Ticket title: ").strip()
     category = input("Category (Network/Hardware/Software/Other): ").strip()
     urgency = input("Urgency (low/medium/high): ").strip()
-    affected_users = int(input("Number of affected users: "))
+    affected_users = parse_affected_users(input("Number of affected users: "))
 
     ticket = create_ticket(
         tickets,
@@ -104,8 +129,9 @@ def show_menu():
     print("3. Update ticket status")
     print("4. View prioritized work queue")
     print("5. View all tickets")
-    print("6. Generate report")
-    print("7. Exit")
+    print("6. View one ticket")
+    print("7. Generate report")
+    print("8. Exit")
     print("================================")
 
 
@@ -121,7 +147,7 @@ def main():
 
     while True:
         show_menu()
-        choice = input("Select an option (1-7): ").strip()
+        choice = input("Select an option (1-8): ").strip()
 
         try:
             if choice == "1":
@@ -135,12 +161,14 @@ def main():
             elif choice == "5":
                 display_tickets(tickets)
             elif choice == "6":
-                print_report(tickets)
+                view_one_ticket(tickets)
             elif choice == "7":
+                print_report(tickets)
+            elif choice == "8":
                 print("\nThank you for using CampusFlow. Goodbye!")
                 break
             else:
-                print("\nInvalid choice. Select a number from 1 to 7.")
+                print("\nInvalid choice. Select a number from 1 to 8.")
 
         except (ValueError, OSError) as error:
             print(f"\nOperation failed: {error}")

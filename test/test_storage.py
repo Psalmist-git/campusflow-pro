@@ -124,5 +124,22 @@ class TestTicketStorage(unittest.TestCase):
         )
 
 
+    def test_new_ticket_after_reload_gets_unique_id(self):
+        tickets = []
+        create_ticket(tickets, title="A", category="Network",
+                      urgency="high", affected_users=12)
+        create_ticket(tickets, title="B", category="Other",
+                      urgency="low", affected_users=1)
+        storage.save_tickets(tickets, self.path)
+
+        reloaded = storage.load_tickets(self.path)
+        new = create_ticket(reloaded, title="C", category="Software",
+                            urgency="low", affected_users=1)
+
+        ids = [t["id"] for t in reloaded]
+        self.assertEqual(new["id"], "T003")
+        self.assertEqual(len(ids), len(set(ids)))
+
+
 if __name__ == "__main__":
     unittest.main()
