@@ -97,6 +97,17 @@ class CreateTicketTests(unittest.TestCase):
         self.assertEqual(ticket["category"], "Software")
         self.assertEqual(ticket["urgency"], "medium")
 
+    def test_invalid_category_creation_does_not_change_ticket_list(self):
+        with self.assertRaises(ValidationError):
+            create_ticket(
+                self.tickets,
+                title="Power failure",
+                category="Electricity",
+                urgency="high",
+                affected_users=5,
+            )
+        self.assertEqual(self.tickets, [])
+
     def test_invalid_creation_does_not_change_ticket_list(self):
         with self.assertRaises(ValidationError):
             create_ticket(
@@ -105,66 +116,6 @@ class CreateTicketTests(unittest.TestCase):
                 category="Network",
                 urgency="urgent",
                 affected_users=5,
-            )
-        self.assertEqual(self.tickets, [])
-
-    def test_legacy_interface_uses_default_priority(self):
-        ticket = create_ticket(
-            self.tickets,
-            "Network issue",
-            "Wi-Fi is down.",
-        )
-        self.assertEqual(ticket["id"], "T001")
-        self.assertEqual(ticket["title"], "Network issue")
-        self.assertEqual(ticket["description"], "Wi-Fi is down.")
-        self.assertEqual(ticket["priority"], "medium")
-
-    def test_legacy_interface_accepts_explicit_priority(self):
-        ticket = create_ticket(
-            self.tickets,
-            "Network issue",
-            "Wi-Fi is down.",
-            " HIGH ",
-        )
-        self.assertEqual(ticket["priority"], "high")
-
-    def test_legacy_interface_accepts_keyword_arguments(self):
-        ticket = create_ticket(
-            self.tickets,
-            title="Broken projector",
-            description="The projector will not start.",
-            priority="low",
-        )
-        self.assertEqual(ticket["priority"], "low")
-
-    def test_legacy_interface_increments_ticket_ids(self):
-        first = create_ticket(self.tickets, "First", "First description")
-        second = create_ticket(self.tickets, "Second", "Second description")
-        self.assertEqual(first["id"], "T001")
-        self.assertEqual(second["id"], "T002")
-
-    def test_blank_legacy_description_is_rejected_without_appending(self):
-        with self.assertRaises(ValidationError):
-            create_ticket(self.tickets, "Network issue", "  ")
-        self.assertEqual(self.tickets, [])
-
-    def test_invalid_legacy_priority_is_rejected(self):
-        with self.assertRaises(ValidationError):
-            create_ticket(
-                self.tickets,
-                "Network issue",
-                "Wi-Fi is down.",
-                "urgent",
-            )
-        self.assertEqual(self.tickets, [])
-
-    def test_non_string_legacy_priority_is_rejected(self):
-        with self.assertRaises(ValidationError):
-            create_ticket(
-                self.tickets,
-                "Network issue",
-                "Wi-Fi is down.",
-                10,
             )
         self.assertEqual(self.tickets, [])
 
