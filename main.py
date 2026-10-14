@@ -117,7 +117,7 @@ def create_new_ticket(tickets):
 
     save_tickets(tickets)
 
-    print(f"\\nTicket {ticket['id']} created successfully.")
+    print(f"\nTicket {ticket['id']} created successfully.")
     print(f"Calculated priority: {ticket['priority']}")
 
 def assign_existing_ticket(tickets):
@@ -280,7 +280,7 @@ def main():
             elif choice == "9":
                 add_ticket_note(tickets)
             elif choice == "10":
-                print("\nThank you for using CampusFlow. Goodbye!")
+                print("\nThank you for using CampusFlow Pro. I hope we helped resolved you challenge.")
                 break
             else:
                 print("\nInvalid choice. Select a number from 1 to 10.")
