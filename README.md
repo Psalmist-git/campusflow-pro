@@ -46,16 +46,20 @@ Ticket IDs are not case-sensitive (`t001` works as well as `T001`).
 python3 -m unittest discover -s test -v
 ```
 
-The suite (60 tests) covers: priority rules and their boundaries, input validation,
-unique ID generation, assignment, status transitions (including rejected ones and
-reopen), work-queue ordering and ties, reports (including zero tickets), JSON
-save/load round trips, malformed JSON, and creating a ticket after reload without
-duplicating an ID. Storage tests use temporary files, so your real data is never touched.
+The suite currently contains 84 tests covering: priority rules and their
+boundaries, input validation, unique ticket ID generation, assignment, status
+transitions (including rejected transitions and reopening), open work-queue
+ordering, reports, JSON save/load round trips, malformed JSON, ticket and note
+validation, note persistence, and ID continuity after reload. Storage tests use
+temporary files, so your real data is never touched.
 
 ## Ticket rules
 
 Each ticket stores `id`, `title`, `category`, `urgency`, `affected_users`,
-`priority`, `status`, `assigned_to`.
+`priority`, `status`, and `assigned_to`. The newer ticket schema also supports
+an optional `notes` list, defaulting to an empty list for newly created tickets.
+Each note stores `note_id`, `author`, and `message`. Legacy tickets without
+notes remain supported.
 
 - **Category:** Network, Hardware, Software, Other
 - **Urgency:** low, medium, high
@@ -74,15 +78,28 @@ Status workflow: `open -> in_progress -> resolved`.
 - A resolved ticket cannot be changed (including reassignment) until it is
   explicitly reopened to `open`.
 
-The work queue shows unresolved tickets ordered critical -> high -> medium -> low,
-with ties broken by the lower numeric ticket ID.
+The work queue shows only tickets with `open` status, ordered by priority
+critical -> high -> medium -> low. Tickets with the same priority are ordered
+by ascending numeric ticket ID. Tickets with `in_progress` or `resolved`
+status are excluded.
 
 ## Where data is saved
 
-Tickets are saved to `data/tickets.json` after every change and loaded on startup.
-To start fresh, delete that file. A missing file starts an empty list. A malformed
-file produces a clear error and is never overwritten. The file is listed in
-`.gitignore`.
+Tickets are saved to `data/tickets.json` after every change and loaded on
+startup. A missing file starts an empty collection. Malformed JSON produces a
+clear error and is never overwritten.
+
+The storage layer validates the complete ticket collection before saving or
+accepting loaded data. Validation covers required fields, ticket IDs and
+duplicates, category, urgency, priority consistency, status, assignee, and note
+structure. Invalid data is rejected rather than silently accepted.
+
+Notes are stored within their ticket records. Each note has a unique ID within
+its ticket, a nonblank author, and a trimmed message between 5 and 300
+characters. Notes can be added to open or in-progress tickets, but not resolved
+tickets. Note IDs continue sequentially when tickets are reloaded.
+
+The JSON file is listed in `.gitignore`.
 
 ## Known limitations
 

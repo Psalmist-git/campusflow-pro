@@ -87,10 +87,10 @@ def update_status(tickets, ticket_id, new_status):
 
 
 def get_work_queue(tickets):
-    """Return unresolved tickets ordered by priority, then numeric ticket ID."""
-    unresolved = [
+    """Return open tickets ordered by priority, then numeric ticket ID."""
+    open_tickets = [
         ticket for ticket in tickets
-        if ticket.get("status") != "resolved"
+        if ticket.get("status") == "open"
     ]
 
     def sort_key(ticket):
@@ -111,4 +111,4 @@ def get_work_queue(tickets):
 
         return PRIORITY_ORDER[priority], numeric_id
 
-    return sorted(unresolved, key=sort_key)
+    return sorted(open_tickets, key=sort_key)

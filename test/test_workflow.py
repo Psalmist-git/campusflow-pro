@@ -57,8 +57,13 @@ class TestCaseInsensitiveIds(unittest.TestCase):
 
 class TestTicketWorkflow(unittest.TestCase):
     def test_unassigned_ticket_cannot_start(self):
+        tickets = [make_ticket()]
+        original_ticket = tickets[0].copy()
+
         with self.assertRaises(ValueError):
-            update_status([make_ticket()], "T001", "in_progress")
+            update_status(tickets, "T001", "in_progress")
+
+        self.assertEqual(tickets[0], original_ticket)
 
     def test_assigned_ticket_can_start(self):
         tickets = [make_ticket(assigned_to="John")]
@@ -83,7 +88,6 @@ class TestTicketWorkflow(unittest.TestCase):
         with self.assertRaises(ValueError):
             update_status([make_ticket()], "T001", "waiting")
 
-
 class TestWorkQueue(unittest.TestCase):
     def test_priority_then_numeric_id_order(self):
         tickets = [
@@ -106,6 +110,17 @@ class TestWorkQueue(unittest.TestCase):
         self.assertEqual(
             [ticket["id"] for ticket in get_work_queue(tickets)],
             ["T001"],
+        )
+
+    def test_in_progress_tickets_are_excluded(self):
+        tickets = [
+            make_ticket("T001", status="open", priority="critical"),
+            make_ticket("T002", status="in_progress", priority="high"),
+            make_ticket("T003", status="open", priority="medium"),
+        ]
+        self.assertEqual(
+            [ticket["id"] for ticket in get_work_queue(tickets)],
+            ["T001", "T003"],
         )
 
     def test_empty_queue(self):
