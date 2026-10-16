@@ -260,7 +260,7 @@ def main():
 
     while True:
         show_menu()
-        choice = input("Select an option (1-10): ").strip()
+        choice = input("Select an option (1-11): ").strip()
 
         try:
             if choice == "1":
@@ -287,7 +287,7 @@ def main():
                 print("\nThank you for using CampusFlow Pro. I hope we helped resolved you challenge.")
                 break
             else:
-                print("\nInvalid choice. Select a number from 1 to 10.")
+                print("\nInvalid choice. Select a number from 1 to 11.")
 
         except (ValueError, OSError) as error:
             print(f"\nOperation failed: {error}")
