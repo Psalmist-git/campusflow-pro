@@ -3,6 +3,7 @@
 from campusflow.reports import print_report
 from campusflow.search import search_and_filter_tickets
 from campusflow.storage import load_tickets, save_tickets
+from campusflow.understanding_check import run_understanding_check
 from campusflow.tickets import (
     ValidationError,
     add_note,
@@ -241,7 +242,8 @@ def show_menu():
     print("7. Generate report")
     print("8. Search and filter tickets")
     print("9. Add a ticket note")
-    print("10. Exit")
+    print("10. Engineering Understanding Check")
+    print("11. Exit")
     print("================================")
 
 
@@ -280,6 +282,8 @@ def main():
             elif choice == "9":
                 add_ticket_note(tickets)
             elif choice == "10":
+                run_understanding_check()
+            elif choice == "11":
                 print("\nThank you for using CampusFlow Pro. I hope we helped resolved you challenge.")
                 break
             else:
