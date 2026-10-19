@@ -5,7 +5,14 @@
     "description": "The projector in Room 2 is not working.",
     "priority": "high",
     "status": "open",
-    "assigned_to": null
+    "assigned_to": null,
+    "notes": [
+      {
+        "note_id": "N001",
+        "author": "Shamsi",
+        "message": "How e come dey be?"
+      }
+    ]
   },
   {
     "id": "T002",
@@ -16,5 +23,16 @@
     "priority": "critical",
     "status": "open",
     "assigned_to": null
+  },
+  {
+    "id": "T003",
+    "title": "wifi",
+    "category": "Software",
+    "urgency": "high",
+    "affected_users": 9,
+    "priority": "high",
+    "status": "open",
+    "assigned_to": null,
+    "notes": []
   }
 ]
